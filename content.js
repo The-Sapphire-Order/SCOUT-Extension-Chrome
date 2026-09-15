@@ -165,7 +165,7 @@ function showTermsAndConditions() {
     const overlay = document.createElement("div");
     overlay.id = "scout-tnc-modal";
     overlay.className = "scout-modal-overlay scout-visible"; 
-    overlay.style.zIndex = "99999999"; 
+    overlay.style.zIndex = "99999999";
 
     overlay.innerHTML = `
         <div class="scout-modal-box" onclick="event.stopPropagation()">
