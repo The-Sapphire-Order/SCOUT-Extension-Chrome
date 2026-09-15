@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "S.C.O.U.T. Roblox",
+  "version": "1.56.0",
+  "description": "Safety scanner for Roblox users. Made by the community, for the community. Stay safe.",
+  "permissions": ["storage", "notifications", "contextMenus"],
+  "host_permissions": [
+    "https://*.roblox.com/*",
+    "https://raw.githubusercontent.com/*",
+    "https://scout-extension-notif.odinseyerblx.workers.dev/*",
+    "https://scout-main-node.eyesofjusticesquadrblx.workers.dev/*",
+    "https://fallback-node.onrender.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.roblox.com/*"],
+      "js": ["content.js"],
+      "css": ["scout.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "128": "scout_logo.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["scout_logo.png"],
+      "matches": ["https://www.roblox.com/*"]
+    }
+  ]
+}

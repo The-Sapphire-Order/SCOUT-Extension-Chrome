@@ -1,0 +1,230 @@
+/* --- MAIN PROFILE HTML BADGE --- */
+.scout-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 6px;
+  padding: 6px 10px;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+.scout-logo {
+  width: 16px;
+  height: 16px;
+}
+
+.scout-safe { background: #2ecc71; color: white; }
+.scout-low { background: #f1c40f; color: black; }
+.scout-medium { background: #e67e22; color: white; }
+.scout-high { background: #e74c3c; color: white; }
+
+@keyframes scout-ripple {
+  0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(231, 76, 60, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+}
+
+.scout-db-warning-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background-color: #e74c3c;
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 14px;
+  margin-left: 8px;
+  cursor: help;
+  vertical-align: middle;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  animation: scout-ripple 1.5s infinite;
+}
+
+.scout-db-warning-wrapper::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 130%; 
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: #2b2b36;
+  color: #f0f0f5;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: normal;
+  width: max-content;
+  max-width: 250px;
+  text-align: center;
+  line-height: 1.4;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+  border: 1px solid #e74c3c;
+  z-index: 99999;
+  pointer-events: none;
+}
+/* --- Global Tooltip Style --- */
+.scout-db-tooltip {
+    position: absolute;
+    background: #2b2b36;
+    color: #f0f0f5;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    z-index: 999999; /* Force it to the very top */
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    border: 1px solid #3a3a48;
+}
+
+.scout-db-warning-wrapper::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  border-width: 6px;
+  border-style: solid;
+  border-color: #e74c3c transparent transparent transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 99999;
+}
+
+.scout-db-warning-wrapper:hover::after,
+.scout-db-warning-wrapper:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.scout-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999999;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.scout-modal-box {
+  background: #1e1e24;
+  border: 1px solid #3a3a48;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 450px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(231, 76, 60, 0.2);
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: #f0f0f5;
+  transform: translateY(20px) scale(0.95);
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.scout-modal-overlay.scout-visible { opacity: 1; }
+.scout-modal-overlay.scout-visible .scout-modal-box { transform: translateY(0) scale(1); }
+
+.scout-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #3a3a48;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.scout-modal-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #e74c3c;
+  margin: 0;
+}
+
+.scout-modal-section { margin-bottom: 16px; }
+.scout-modal-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #a0a0b0;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.scout-modal-value {
+  font-size: 14px;
+  font-weight: bold;
+  background: #2b2b36;
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.scout-modal-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #d0d0dc;
+}
+
+.scout-modal-close {
+  width: 100%;
+  padding: 10px;
+  background: #3a3a48;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+.scout-modal-close:hover { background: #4b4b5c; }
+
+/* --- PROFILE GROUP TILE WARNING --- */
+.scout-group-tile-warning {
+  position: absolute !important;
+  top: -6px;
+  right: -6px;
+  z-index: 10;
+  border: 2px solid #2b2b36;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+}
+
+/* --- FRIEND TILE WARNING --- */
+.scout-friend-tile-warning {
+    position: absolute !important;
+    top: -4px;
+    right: -4px;
+    z-index: 10;
+    border: 2px solid #2b2b36;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    margin: 0 !important;
+    cursor: pointer;
+}
+/* --- SCAM FLAG OVERRIDES --- */
+.scout-scam-warning {
+  background-color: #f1c40f !important;
+  color: black !important; 
+}
+
+/* Tooltip Arrow */
+.scout-scam-warning::before {
+  border-color: #f1c40f transparent transparent transparent !important;
+}
+
+/* Tooltip Border */
+.scout-scam-warning::after {
+  border-color: #f1c40f !important;
+}

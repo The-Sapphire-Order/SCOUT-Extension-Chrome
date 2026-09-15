@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    :root {
+      --bg-dark: #1e1e24;
+      --panel-bg: #2b2b36;
+      --accent: #2ecc71;
+      --text-main: #f0f0f5;
+      --text-muted: #a0a0b0;
+      --danger: #e74c3c;
+    }
+    
+    body { 
+      font-family: 'Segoe UI', Tahoma, sans-serif; 
+      width: 280px; 
+      padding: 20px; 
+      background: var(--bg-dark); 
+      color: var(--text-main); 
+      margin: 0; 
+    }
+    
+    h2 { 
+      font-size: 18px; 
+      margin: 0 0 15px 0; 
+      border-bottom: 2px solid var(--panel-bg); 
+      padding-bottom: 10px; 
+      text-align: center; 
+      letter-spacing: 0.5px; 
+    }
+    
+    .setting { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      background: var(--panel-bg); 
+      padding: 12px 15px; 
+      border-radius: 8px; 
+      margin-bottom: 10px; 
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .setting:hover { 
+      transform: translateY(-1px); 
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    
+    .setting-text { 
+      display: flex; 
+      flex-direction: column; 
+    }
+    
+    .setting-title { 
+      font-size: 13px; 
+      font-weight: 600; 
+    }
+    
+    .setting-desc { 
+      font-size: 11px; 
+      color: var(--text-muted); 
+      margin-top: 2px; 
+    }
+    
+    /* Smooth Toggle Switch */
+    .switch { 
+      position: relative; 
+      display: inline-block; 
+      width: 40px; 
+      height: 22px; 
+      flex-shrink: 0; 
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { 
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; 
+      background-color: #4b4b5c; transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1); border-radius: 22px; 
+    }
+    .slider:before { 
+      position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; 
+      background-color: white; transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1); border-radius: 50%; 
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3); 
+    }
+    input:checked + .slider { background-color: var(--accent); }
+    input:checked + .slider:before { transform: translateX(18px); }
+
+    /* Warnings and Banners */
+    .note { 
+      font-size: 11px; color: #f39c12; background: rgba(243, 156, 18, 0.1); 
+      padding: 12px; border-radius: 8px; line-height: 1.5; 
+      border: 1px solid rgba(243, 156, 18, 0.3); margin-top: 15px;
+    }
+    
+    #update-banner { 
+      display: none; background: linear-gradient(135deg, #e74c3c, #c0392b); 
+      padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center; 
+      box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); 
+    }
+    .update-title { font-weight: bold; font-size: 14px; margin-bottom: 5px; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+    .update-desc { font-size: 12px; margin-bottom: 10px; color: rgba(255,255,255,0.9); }
+    #update-btn { 
+      background: #fff; color: var(--danger); border: none; padding: 8px 15px; 
+      border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; 
+      width: 100%; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    }
+    #update-btn:hover { background: #f8f9fa; transform: scale(1.02); }
+  </style>
+</head>
+<body>
+  <div id="update-banner">
+    <div class="update-title">[!] Update Available!</div>
+    <div class="update-desc">A new version of S.C.O.U.T. is ready.</div>
+    <button id="update-btn">Download from GitHub</button>
+  </div>
+
+  <h2>S.C.O.U.T. Settings</h2>
+  
+  <div class="setting">
+    <div class="setting-text">
+      <span class="setting-title">Main Profile Badge</span>
+      <span class="setting-desc">Shows risk on profile header</span>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="main-badge-toggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="setting">
+    <div class="setting-text">
+      <span class="setting-title">Auto-Show Warnings</span>
+      <span class="setting-desc">Auto-opens threat reports on flagged profiles</span>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="auto-popup-toggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="setting">
+    <div class="setting-text">
+      <span class="setting-title">Group Warnings</span>
+      <span class="setting-desc">Auto-opens warnings on flagged groups</span>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="auto-group-popup-toggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="setting">
+    <div class="setting-text">
+      <span class="setting-title">Terminated Friends</span>
+      <span class="setting-desc">Scans network for banned users</span>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="term-badge-toggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="setting">
+    <div class="setting-text">
+      <span class="setting-title">Group Page Badges</span>
+      <span class="setting-desc">Shows risk level on community pages</span>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="group-badge-toggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+  
+  <div class="setting">
+    <div class="setting-text">
+      <span class="setting-title">User List Badges</span>
+      <span class="setting-desc">Flags users in friends/followers</span>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="list-badge-toggle" checked>
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="note">
+    <b>[!] Compatibility Note:</b> Disable "User List Badges" and "Group Page Badges" if you experience layout glitches alongside other extensions like RoPro.
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
