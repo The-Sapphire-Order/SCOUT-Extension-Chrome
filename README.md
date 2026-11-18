@@ -36,20 +36,14 @@ Made by the community, for the community. Stay safe.
 ---
 
 ## ⚙️ How to Install
-Because S.C.O.U.T. is not on the Web Store, use Developer Mode:
-1. **Download:** Click the green **`Code`** button at the top of this repository and select **`Download ZIP`**.
-2. **Extract:** Right-click the `.zip` file and select **Extract All**.
-3. **Open Settings:** Navigate to `chrome://extensions/` (or `about:addons` in Firefox).
-4. **Enable Developer Mode:** Toggle the switch in the top-right corner.
-5. **Load:** Click **Load unpacked** and select your extracted folder.
+Visit the official Mozilla extension store and download the extension for **Firefox** (PC devices only): **https://addons.mozilla.org/en-US/firefox/addon/scout-roblox/**
 
 ---
 
 ## 🔄 How to Update
-When a new version is released, the extension will display an **Update Ready!** banner.
-1. Click **Get Update** to download the latest `.zip`.
-2. Delete your old folder and extract the new one.
-3. Click the circular **Reload** icon on the S.C.O.U.T. card in your extensions manager.
+* Within Firefox, go to Extensions -> Manage Extensions, and look for **S.C.O.U.T. Roblox**, check the three dots, and click **Manage**.
+* From there, click the **Settings icon** visible in the top right of the card, and select **Check for updates**, it should automatically detect and update if there is a new verison.
+* It is recommended to select "Allow automatic updates" as **On** so you don't have to repeat this process over and over every update.
 
 ---
 
