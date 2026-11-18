@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    :root {
+      --bg-dark: #14141a;
+      --bg-grad: #1b1b24;
+      --panel-bg: #22222d;
+      --panel-hover: #282836;
+      --border: rgba(255, 255, 255, 0.06);
+      --accent: #2ecc71;
+      --accent-glow: rgba(46, 204, 113, 0.35);
+      --brand: #3d5afe;
+      --text-main: #f0f0f5;
+      --text-muted: #8f8fa3;
+      --danger: #e74c3c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      width: 330px;
+      padding: 0;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      margin: 0;
+    }
+
+    /* ---------- Branded header ---------- */
+    .hero {
+      position: relative;
+      padding: 20px 20px 18px;
+      background:
+        radial-gradient(120% 140% at 0% 0%, rgba(61, 90, 254, 0.28) 0%, rgba(61, 90, 254, 0) 55%),
+        radial-gradient(90% 120% at 100% 0%, rgba(46, 204, 113, 0.14) 0%, rgba(46, 204, 113, 0) 60%),
+        var(--bg-grad);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .hero-row { display: flex; align-items: center; gap: 14px; }
+
+    .logo-tile {
+      width: 46px;
+      height: 46px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #14141a;
+      border-radius: 13px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+    .logo-tile img { width: 30px; height: 30px; object-fit: contain; }
+
+    .hero-text { min-width: 0; }
+
+    .greeting {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      line-height: 1.2;
+    }
+
+    .tagline {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .brand-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 14px;
+      padding: 4px 10px 4px 8px;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+    }
+    .brand-chip .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    /* ---------- Content ---------- */
+    .content { padding: 16px 16px 18px; }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 14px 4px 8px;
+    }
+    .section-label:first-of-type { margin-top: 2px; }
+
+    .setting {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--panel-bg);
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 7px;
+      transition: background 0.2s, transform 0.2s, border-color 0.2s;
+    }
+
+    .setting:hover {
+      background: var(--panel-hover);
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .setting-text { display: flex; flex-direction: column; min-width: 0; }
+    .setting-title { font-size: 13px; font-weight: 600; }
+    .setting-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.35; }
+
+    .badge-new {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 1px 6px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: #0d2b1a;
+      background: var(--accent);
+      border-radius: 100px;
+      vertical-align: 1px;
+    }
+
+    /* Smooth Toggle Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #4b4b5c; transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1); border-radius: 22px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
+      background-color: white; transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1); border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    input:checked + .slider { background-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+    input:checked + .slider:before { transform: translateX(18px); }
+    input:focus-visible + .slider { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+    /* Warnings and Banners */
+    .note {
+      font-size: 11px; color: #f39c12; background: rgba(243, 156, 18, 0.08);
+      padding: 12px; border-radius: 10px; line-height: 1.5;
+      border: 1px solid rgba(243, 156, 18, 0.25); margin-top: 14px;
+    }
+
+    #update-banner {
+      display: none; background: linear-gradient(135deg, #e74c3c, #c0392b);
+      padding: 15px; border-radius: 10px; margin-bottom: 4px; text-align: center;
+      box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+    }
+    .update-title { font-weight: bold; font-size: 14px; margin-bottom: 5px; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+    .update-desc { font-size: 12px; margin-bottom: 10px; color: rgba(255,255,255,0.9); }
+    #update-btn {
+      background: #fff; color: var(--danger); border: none; padding: 8px 15px;
+      border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer;
+      width: 100%; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    #update-btn:hover { background: #f8f9fa; transform: scale(1.02); }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="hero-row">
+      <div class="logo-tile"><img src="scout_logo.png" alt="S.C.O.U.T."></div>
+      <div class="hero-text">
+        <div class="greeting" id="greeting">Hello</div>
+        <div class="tagline">Stay safe out there.</div>
+      </div>
+    </div>
+    <div class="brand-chip"><span class="dot"></span>S.C.O.U.T. <span id="version-label"></span></div>
+  </div>
+
+  <div class="content">
+    <div id="update-banner">
+      <div class="update-title">[!] Update Available!</div>
+      <div class="update-desc">A new version of S.C.O.U.T. is ready.</div>
+      <button id="update-btn">Download from GitHub</button>
+    </div>
+
+    <div class="section-label">Profiles</div>
+
+    <div class="setting">
+      <div class="setting-text">
+        <span class="setting-title">Main Profile Badge</span>
+        <span class="setting-desc">Shows risk on profile header</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="main-badge-toggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="setting">
+      <div class="setting-text">
+        <span class="setting-title">Auto-Show Warnings</span>
+        <span class="setting-desc">Auto-opens threat reports on flagged profiles</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="auto-popup-toggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="section-label">Friends Network</div>
+
+    <div class="setting">
+      <div class="setting-text">
+        <span class="setting-title">Auto-Scan Friends<span class="badge-new">NEW</span></span>
+        <span class="setting-desc">Scan every friends list on load. When off, use the Scan button next to Friends</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="auto-scan-toggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="setting">
+      <div class="setting-text">
+        <span class="setting-title">Terminated Friends</span>
+        <span class="setting-desc">Scans network for banned users</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="term-badge-toggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="setting">
+      <div class="setting-text">
+        <span class="setting-title">User List Badges</span>
+        <span class="setting-desc">Flags users in friends/followers</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="list-badge-toggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="section-label">Communities</div>
+
+    <div class="setting">
+      <div class="setting-text">
+        <span class="setting-title">Group Warnings</span>
+        <span class="setting-desc">Auto-opens warnings on flagged groups</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="auto-group-popup-toggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="setting">
+      <div class="setting-text">
+        <span class="setting-title">Group Page Badges</span>
+        <span class="setting-desc">Shows risk level on community pages</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="group-badge-toggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="note">
+      <b>[!] Compatibility Note:</b> Disable "User List Badges" and "Group Page Badges" if you experience layout glitches alongside other extensions like RoPro.
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
