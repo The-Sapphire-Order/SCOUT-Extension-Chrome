@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "S.C.O.U.T. Roblox",
-  "version": "1.56.0",
+  "version": "1.56.1",
   "description": "Safety scanner for Roblox users. Made by the community, for the community. Stay safe.",
   "permissions": ["storage", "notifications", "contextMenus"],
   "host_permissions": [

@@ -9,8 +9,13 @@ let settings = {
     termBadgeEnabled: true, 
     groupBadgeEnabled: true,
     autoGroupPopupEnabled: true, 
-    autoPopupEnabled: true 
+    autoPopupEnabled: true,
+    autoScanEnabled: false // Friends scan runs only on click unless this is ON
 };
+
+// Per-profile state for the manual friends scan (so the 2s refresh loop never re-fires requests)
+const manualScanUsers = new Set();   // userIds whose scan the user has clicked
+const flaggedScanResults = new Map(); // userId -> { flagged, total } once a scan finishes
 
 // ---------------- CONTEXT MENU ID EXTRACTOR ----------------
 document.addEventListener("mousedown", (e) => {
@@ -57,6 +62,7 @@ chrome.storage.local.get([
     'groupBadgeEnabled', 
     'autoPopupEnabled',
     'autoGroupPopupEnabled', 
+    'autoScanEnabled',
     'updateAvailable',
     'scoutTcAccepted'
 ], (result) => {
@@ -66,6 +72,8 @@ chrome.storage.local.get([
     if (result.groupBadgeEnabled !== undefined) settings.groupBadgeEnabled = result.groupBadgeEnabled;
     if (result.autoGroupPopupEnabled !== undefined) settings.autoGroupPopupEnabled = result.autoGroupPopupEnabled;
     if (result.autoPopupEnabled !== undefined) settings.autoPopupEnabled = result.autoPopupEnabled;
+    if (result.autoScanEnabled !== undefined) settings.autoScanEnabled = result.autoScanEnabled;
+    if (settings.autoScanEnabled) removeIdleScanButtons();
     if (!result.scoutTcAccepted) {
         showTermsAndConditions();
     }
@@ -101,6 +109,10 @@ chrome.storage.onChanged.addListener((changes) => {
     }
     if (changes.autoPopupEnabled) {
         settings.autoPopupEnabled = changes.autoPopupEnabled.newValue;
+    }
+    if (changes.autoScanEnabled) {
+        settings.autoScanEnabled = changes.autoScanEnabled.newValue;
+        if (settings.autoScanEnabled) removeIdleScanButtons();
     }
     if (changes.updateAvailable && changes.updateAvailable.newValue === true) {
         showInPageUpdateBanner();
@@ -209,6 +221,15 @@ function removeListBadges() {
     document.querySelectorAll('.scout-list-warning').forEach(icon => icon.remove());
     document.querySelectorAll('[data-scout-warning-processed]').forEach(el => {
         el.removeAttribute('data-scout-warning-processed');
+    });
+}
+
+// Swap any idle "Scan" buttons out so the next refresh tick auto-scans (used when auto-scan is ON)
+function removeIdleScanButtons() {
+    document.querySelectorAll('.scout-network-scanner[data-scout-state="idle"]').forEach(el => {
+        const host = el.parentElement;
+        if (host) delete host.dataset.scoutNetworkScanner;
+        el.remove();
     });
 }
 
@@ -549,6 +570,8 @@ async function processMainProfile() {
 // ---------------- TERMINATED FRIENDS UI ----------------
 async function processTerminatedFriendsBadge(userId) {
     if (!settings.termBadgeEnabled) return;
+    // No Terminated bubble (and no request) until the user clicks Scan, unless auto-scan is ON
+    if (!settings.autoScanEnabled && !manualScanUsers.has(userId)) return;
 
     const connectionsBtn = document.querySelector(`a[href*="/users/${userId}/friends"]`);
     if (!connectionsBtn || !connectionsBtn.parentElement) return;
@@ -597,6 +620,13 @@ async function processTerminatedFriendsBadge(userId) {
 }
 
 // ---------------- FLAGGED NETWORK SCANNER ----------------
+const SCOUT_SCANNER_STYLE = `
+    display: inline-flex; align-items: center; gap: 8px; 
+    font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 13px; font-weight: normal;
+    margin-left: 12px; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 6px;
+    vertical-align: middle; border: 1px solid transparent;
+`;
+
 async function processFlaggedFriendsScanner(userId) {
     if (!settings.termBadgeEnabled) return; // Hooked to same setting as terminated scanner
     
@@ -611,28 +641,87 @@ async function processFlaggedFriendsScanner(userId) {
     headerEl.dataset.scoutNetworkScanner = "true";
 
     const scannerUI = document.createElement("div");
-    scannerUI.style.cssText = `
-        display: inline-flex; align-items: center; gap: 8px; 
-        font-family: 'Segoe UI', Tahoma, sans-serif; font-size: 13px; font-weight: normal;
-        margin-left: 12px; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 6px;
-        vertical-align: middle; border: 1px solid transparent;
-    `;
+    scannerUI.className = "scout-network-scanner";
+    scannerUI.style.cssText = SCOUT_SCANNER_STYLE;
+    headerEl.appendChild(scannerUI);
+
+    // Auto-scan ON: original behaviour, runs immediately
+    if (settings.autoScanEnabled) {
+        runFlaggedFriendsScan(userId, scannerUI);
+        return;
+    }
+
+    // Header was re-rendered by Roblox after a finished manual scan: restore the result, no new requests
+    if (flaggedScanResults.has(userId)) {
+        renderFlaggedScanResult(scannerUI, flaggedScanResults.get(userId));
+        return;
+    }
+
+    // Scan already clicked and still in flight (header re-rendered mid-scan): resume the shell without refetching
+    if (manualScanUsers.has(userId)) {
+        scannerUI.dataset.scoutState = "running";
+        scannerUI.innerHTML = scoutProgressMarkup("Scanning...");
+        return;
+    }
+
+    // Default: a small Scan button, zero friends API traffic until clicked
+    scannerUI.dataset.scoutState = "idle";
+    scannerUI.style.cssText = "";
+    scannerUI.classList.add("scout-scan-idle");
     scannerUI.innerHTML = `
+        <button type="button" class="scout-scan-btn" title="Scan this user's friends against the S.C.O.U.T. database">
+            <img src="${chrome.runtime.getURL("scout_logo.png")}" alt="">
+            <span>Scan</span>
+        </button>
+    `;
+    scannerUI.querySelector(".scout-scan-btn").addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (scannerUI.dataset.scoutState !== "idle") return;
+        manualScanUsers.add(userId);
+        scannerUI.classList.remove("scout-scan-idle");
+        scannerUI.style.cssText = SCOUT_SCANNER_STYLE;
+        processTerminatedFriendsBadge(userId); // shows the Terminated bubble now that a scan was requested
+        runFlaggedFriendsScan(userId, scannerUI);
+    });
+}
+
+function scoutProgressMarkup(initialText) {
+    return `
         <img src="${chrome.runtime.getURL("scout_logo.png")}" style="width: 14px; height: 14px;">
         <div style="width: 80px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
-            <div id="scout-ff-progress" style="width: 0%; height: 100%; background: #e74c3c; transition: 0.3s;"></div>
+            <div class="scout-ff-progress" style="width: 0%; height: 100%; background: #e74c3c; transition: 0.3s;"></div>
         </div>
-        <span id="scout-ff-text" style="color: #a0a0b0; font-size: 11px;">Fetching Network...</span>
+        <span class="scout-ff-text" style="color: #a0a0b0; font-size: 11px;">${initialText}</span>
     `;
-    
-    headerEl.appendChild(scannerUI);
+}
+
+function renderFlaggedScanResult(scannerUI, result) {
+    scannerUI.dataset.scoutState = "done";
+    scannerUI.style.cssText = SCOUT_SCANNER_STYLE;
+    const flagged = result.flagged;
+    const color = flagged > 0 ? "#e74c3c" : "#2ecc71";
+    scannerUI.style.border = `1px solid ${color}`;
+    scannerUI.style.background = flagged > 0 ? "rgba(231, 76, 60, 0.1)" : "rgba(46, 204, 113, 0.1)";
+    scannerUI.innerHTML = `
+        <img src="${chrome.runtime.getURL("scout_logo.png")}" style="width: 14px; height: 14px;">
+        <span style="color: #a0a0b0; font-size: 11px;">${flagged > 0
+            ? `Network Scan: <b style="color:#e74c3c">${flagged} Flagged</b>`
+            : `Network Scan: <b style="color:#2ecc71">Safe</b>`}</span>
+    `;
+}
+
+async function runFlaggedFriendsScan(userId, scannerUI) {
+    scannerUI.dataset.scoutState = "running";
+    scannerUI.innerHTML = scoutProgressMarkup("Fetching Network...");
+    const textEl = scannerUI.querySelector(".scout-ff-text");
+    const progressEl = scannerUI.querySelector(".scout-ff-progress");
     
     const response = await fetchFriendsList(userId);
-    const textEl = document.getElementById("scout-ff-text");
-    const progressEl = document.getElementById("scout-ff-progress");
     
     if (!response || !response.friends) {
         if (textEl) textEl.textContent = "Scan Failed";
+        scannerUI.dataset.scoutState = "failed";
         return;
     }
 
@@ -641,6 +730,7 @@ async function processFlaggedFriendsScanner(userId) {
     if (total === 0) {
         if (textEl) textEl.textContent = "0 Friends";
         if (progressEl) progressEl.style.width = "100%";
+        scannerUI.dataset.scoutState = "done";
         return;
     }
 
@@ -665,18 +755,12 @@ async function processFlaggedFriendsScanner(userId) {
         }
     }
 
-    if (textEl) {
-        if (flagged > 0) {
-            textEl.innerHTML = `Network Scan: <b style="color:#e74c3c">${flagged} Flagged</b>`;
-            scannerUI.style.border = "1px solid #e74c3c";
-            scannerUI.style.background = "rgba(231, 76, 60, 0.1)";
-        } else {
-            textEl.innerHTML = `Network Scan: <b style="color:#2ecc71">Safe</b>`;
-            scannerUI.style.border = "1px solid #2ecc71";
-            scannerUI.style.background = "rgba(46, 204, 113, 0.1)";
-            progressEl.style.background = "#2ecc71";
-        }
-    }
+    flaggedScanResults.set(userId, { flagged, total });
+    // If Roblox re-rendered the header mid-scan, update whichever shell is live now
+    const liveUI = scannerUI.isConnected
+        ? scannerUI
+        : document.querySelector('.scout-network-scanner[data-scout-state="running"]');
+    if (liveUI) renderFlaggedScanResult(liveUI, { flagged, total });
 }
 
 // ---------------- GROUP INTELLIGENCE MODAL ----------------

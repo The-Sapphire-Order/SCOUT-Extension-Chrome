@@ -7,6 +7,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateBanner = document.getElementById('update-banner');
     const updateBtn = document.getElementById('update-btn');
     const autoGroupPopupToggle = document.getElementById('auto-group-popup-toggle');
+    const autoScanToggle = document.getElementById('auto-scan-toggle');
+
+    // Time-based greeting + version label
+    const greetingEl = document.getElementById('greeting');
+    if (greetingEl) {
+        const hour = new Date().getHours();
+        greetingEl.textContent = hour >= 5 && hour < 12 ? 'Good morning'
+            : hour >= 12 && hour < 17 ? 'Good afternoon'
+            : 'Good evening';
+    }
+    const versionEl = document.getElementById('version-label');
+    if (versionEl) versionEl.textContent = 'v' + chrome.runtime.getManifest().version;
+
     chrome.storage.local.get({
         mainBadgeEnabled: true,
         termBadgeEnabled: true, 
@@ -14,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         listBadgeEnabled: true,
         autoPopupEnabled: true,
         autoGroupPopupEnabled: true,
+        autoScanEnabled: false,
         updateAvailable: false
     }, (items) => {
         if (mainToggle) mainToggle.checked = items.mainBadgeEnabled;
@@ -22,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (listToggle) listToggle.checked = items.listBadgeEnabled;
         if (autoGroupPopupToggle) autoGroupPopupToggle.checked = items.autoGroupPopupEnabled;
         if (autoPopupToggle) autoPopupToggle.checked = items.autoPopupEnabled;
+        if (autoScanToggle) autoScanToggle.checked = items.autoScanEnabled;
 
         if (items.updateAvailable && updateBanner) {
             updateBanner.style.display = 'block';
@@ -49,6 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (autoPopupToggle) {
         autoPopupToggle.addEventListener('change', () => chrome.storage.local.set({ autoPopupEnabled: autoPopupToggle.checked }));
+    }
+    if (autoScanToggle) {
+        autoScanToggle.addEventListener('change', () => chrome.storage.local.set({ autoScanEnabled: autoScanToggle.checked }));
     }
     if (autoGroupPopupToggle) {
     autoGroupPopupToggle.addEventListener('change', () => chrome.storage.local.set({ autoGroupPopupEnabled: autoGroupPopupToggle.checked }));

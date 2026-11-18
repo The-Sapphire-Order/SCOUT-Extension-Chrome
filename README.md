@@ -1,4 +1,4 @@
-# 🛡️ S.C.O.U.T. Roblox (v1.56.0)
+# 🛡️ S.C.O.U.T. Roblox (v1.56.1)
 
 **S.C.O.U.T. Roblox** is a lightweight, community-driven browser extension designed to keep Roblox players safe. It automatically scans profiles, friend networks, and community groups to detect associations with known NSFW/ERP (Erotic Roleplay) networks. 
 
@@ -8,10 +8,9 @@ Made by the community, for the community. Stay safe.
 
 ---
 
-## ✨ New in v1.56.0
-* **Dedicated Scam Detection:** Added a new threat vector (`SCAM`) to identify accounts involved in phishing and cookie-logging (e.g., fake 3D avatar art commissions). Scammers are marked with a distinct yellow warning badge to differentiate them from NSFW threats.
-* **Smart Profile Badges:** The main profile safety badge now prioritizes database intelligence. If a user has 0 flagged groups but was caught by the Autonomous System or manually logged, the badge will accurately display "DATABASE FLAGGED" or "FLAGGED SCAM" instead of "SAFE".
-* **Community Guidelines Disclaimer:** Introduced a one-time Terms & Conditions popup upon first use to clarify the extension's purpose, acknowledge the possibility of false flags, and enforce a strict anti-harassment policy.
+## ✨ New in v1.56.1
+* **Updated Friends Scanning**: Scan to find friends of a user found in the database is now manual via a "scan" button. This is done to avoid API traffic as well as improve extension performance slightly on lower browser versions. This can be set to automatic again via the settings menu.
+* **Updated Settings UI:** Updated UI for settings to be more neat and understandable.
 
 ## ✨ Core Features
 * **Main Profile Scanning:** Safety rating badges displayed directly on profile headers.
@@ -56,3 +55,10 @@ When a new version is released, the extension will display an **Update Ready!** 
 
 ## 🛠️ Settings & Toggles
 Click the S.C.O.U.T. icon in your browser toolbar to toggle features like "Auto-Show Warnings" or "User List Badges" instantly—no refresh required!
+
+## ⚠️ Disclaimer
+By using S.C.O.U.T. extension, you automatically agree that:
+* The S.C.O.U.T. database is strictly for reference purposes. It should not be a pure decision-making factor for moderation communities.
+* There is a small possibility of false flags, and it may not be 100% accurate.
+* You agree to not harass or target any user by weaponizing this system.
+* You agree to strictly follow Roblox ToS and Community Standards.
