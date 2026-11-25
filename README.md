@@ -1,4 +1,4 @@
-# 🛡️ S.C.O.U.T. Roblox (v1.56.1)
+# 🛡️ S.C.O.U.T. Roblox (v1.57)
 
 **S.C.O.U.T. Roblox** is a lightweight, community-driven browser extension designed to keep Roblox players safe. It automatically scans profiles, friend networks, and community groups to detect associations with known NSFW/ERP (Erotic Roleplay) networks. 
 
