@@ -7,6 +7,8 @@ This extension is a part of the **[S.C.O.U.T. Ecosystem](https://scout-system.on
 Made by the community, for the community. Stay safe.
 
 ---
+## ✨ Force push v1.56.1 to v1.57
+* Change made to accomodate a critical fix to the update notifier. Only a thing in Chrome extension. No other changes done to the code.
 
 ## ✨ New in v1.56.1
 * **Updated Friends Scanning**: Scan to find friends of a user found in the database is now manual via a "scan" button. This is done to avoid API traffic as well as improve extension performance slightly on lower browser versions. This can be set to automatic again via the settings menu.

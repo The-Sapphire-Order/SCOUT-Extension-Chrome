@@ -54,7 +54,16 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         chrome.tabs.sendMessage(tab.id, { action: "copyToClipboard", text: currentContextMenuIdToCopy });
     }
 });
-
+function isNewerVersion(latest, current) {
+    const a = String(latest).split(".").map(n => parseInt(n, 10) || 0);
+    const b = String(current).split(".").map(n => parseInt(n, 10) || 0);
+    for (let i = 0; i < Math.max(a.length, b.length); i++) {
+        const x = a[i] || 0, y = b[i] || 0;
+        if (x > y) return true;
+        if (x < y) return false;
+    }
+    return false;
+}
 // ---------------- UPDATE CHECKER ----------------
 async function checkForUpdates() {
     const data = await chrome.storage.local.get(['lastUpdateCheck']);
@@ -67,7 +76,7 @@ async function checkForUpdates() {
         if (!res.ok) return;
         const config = await res.json();
         const currentVersion = chrome.runtime.getManifest().version;
-        if (parseFloat(config.latestVersion) > parseFloat(currentVersion)) {
+        if (isNewerVersion(config.latestVersion, currentVersion)) {
             chrome.storage.local.set({ updateAvailable: true });
             chrome.notifications.create("scout-update", {
                 type: "basic",
